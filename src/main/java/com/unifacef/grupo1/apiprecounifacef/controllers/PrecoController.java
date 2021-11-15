@@ -22,7 +22,7 @@ public class PrecoController {
 
     private List<Preco> precos = new ArrayList<>();
 
-    @PostMapping("/preco")
+    @PostMapping
     @ApiOperation("Cadastra preço no porduto informado")
     @ApiResponses( value = {
             @ApiResponse(code = 200, message = "OK"),
@@ -46,18 +46,35 @@ public class PrecoController {
         return PrecoMapper.fromDomain(preco);
     }
 
-    @PutMapping("{id}/preco")
+    @PutMapping
     @ApiOperation("Altera o preço de um produto já cadastrado")
     @ApiResponses( value = {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 404, message = "Recurso não encontrado"),
             @ApiResponse(code = 500, message = "Erro interno"),
     })
-    public Preco alteraPreco(@Valid @RequestBody RequestPrecoDto preco, @PathVariable("id") Long id) {
+    public ResponsePrecoDto alteraPreco(@ApiParam(name = "codeseller", example = "1", required = true) @PathVariable("codeseller") Long idSeller,
+                             @ApiParam(name = "codeproduct", example = "1", required = true) @PathVariable("codeproduct") Long idProduct,
+                             @Valid @RequestBody RequestPrecoDto requestPreco) {
 
-        this.precos.forEach( (item) -> System.out.println(item) );
+        Long idPreco = null;
+        for (Preco item : precos) {
+            if (item.getSellerId() == idSeller && item.getProductId() == idProduct) {
+                item.setFrom(requestPreco.getFrom());
+                item.setTo(requestPreco.getTo());
+                idPreco = item.getId();
+                break;
+            }
+        }
 
-        return null;
+        if ( idPreco == null ) {
+            throw new RuntimeException("Produto ou fornecedor não encontrado");
+        }
+
+        Preco preco = PrecoMapper.toDomain(requestPreco);
+        preco.setId( idPreco );
+
+        return PrecoMapper.fromDomain(preco);
     }
 
 }
