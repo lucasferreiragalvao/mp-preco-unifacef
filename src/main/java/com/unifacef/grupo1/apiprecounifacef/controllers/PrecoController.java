@@ -45,4 +45,36 @@ public class PrecoController {
         precos.add(preco);
         return PrecoMapper.fromDomain(preco);
     }
+
+    @PutMapping
+    @ApiOperation("Altera o preço de um produto já cadastrado")
+    @ApiResponses( value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 404, message = "Recurso não encontrado"),
+            @ApiResponse(code = 500, message = "Erro interno"),
+    })
+    public ResponsePrecoDto alteraPreco(@ApiParam(name = "codeseller", example = "1", required = true) @PathVariable("codeseller") Long idSeller,
+                             @ApiParam(name = "codeproduct", example = "1", required = true) @PathVariable("codeproduct") Long idProduct,
+                             @Valid @RequestBody RequestPrecoDto requestPreco) {
+
+        Long idPreco = null;
+        for (Preco item : precos) {
+            if (item.getSellerId() == idSeller && item.getProductId() == idProduct) {
+                item.setFrom(requestPreco.getFrom());
+                item.setTo(requestPreco.getTo());
+                idPreco = item.getId();
+                break;
+            }
+        }
+
+        if ( idPreco == null ) {
+            throw new RuntimeException("Produto ou fornecedor não encontrado");
+        }
+
+        Preco preco = PrecoMapper.toDomain(requestPreco);
+        preco.setId( idPreco );
+
+        return PrecoMapper.fromDomain(preco);
+    }
+
 }
