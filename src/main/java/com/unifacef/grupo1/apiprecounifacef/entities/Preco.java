@@ -10,6 +10,8 @@ import lombok.ToString;
 public class Preco {
 
     private Long id;
+    private Long sellerId;
+    private Long productId;
     private Double from;
     private Double to;
 }
