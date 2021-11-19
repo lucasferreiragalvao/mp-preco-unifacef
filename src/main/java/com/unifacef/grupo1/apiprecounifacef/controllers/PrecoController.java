@@ -12,6 +12,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,6 +74,31 @@ public class PrecoController {
 
         Preco preco = PrecoMapper.toDomain(requestPreco);
         preco.setId( idPreco );
+
+        return PrecoMapper.fromDomain(preco);
+    }
+
+    @GetMapping
+    @ApiOperation("Consulta um produto")
+    @ApiResponses( value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 404, message = "Recurso não encontrato"),
+            @ApiResponse(code = 500, message = "Erro interno"),
+    })
+    public ResponsePrecoDto consultaPreco(@PathVariable("codeseller") Long idSeller, @PathVariable("codeproduct") Long idProduct) {
+
+        Preco preco = null;
+
+        for (Preco item : precos) {
+            if (item.getSellerId() == idSeller && item.getProductId() == idProduct) {
+                preco = item;
+                break;
+            }
+        }
+
+        if ( preco == null ) {
+            throw new RuntimeException("Produto ou fornecedor não encontrado");
+        }
 
         return PrecoMapper.fromDomain(preco);
     }
