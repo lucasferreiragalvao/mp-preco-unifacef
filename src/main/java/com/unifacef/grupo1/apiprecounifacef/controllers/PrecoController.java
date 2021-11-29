@@ -12,7 +12,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,7 +78,7 @@ public class PrecoController {
     }
 
     @GetMapping
-    @ApiOperation("Consulta um produto")
+    @ApiOperation("Consulta um preço")
     @ApiResponses( value = {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 404, message = "Recurso não encontrato"),
